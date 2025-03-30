@@ -11,7 +11,7 @@ func main() {
 	game, err := game.NewGame()
 
 	if err != nil {
-		log.Fatal("Server error, unable to start the game.")
+		log.Fatal("Server error, unable to start the game. ", err.Error())
 	}
 
 	if err := ebiten.RunGame(game); err != nil {

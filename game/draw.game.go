@@ -1,39 +1,31 @@
 package game
 
 import (
-	"image"
+	"image/color"
 
-	"github.com/KotzuYaru/cubes/constants"
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	opts := ebiten.DrawImageOptions{}
+	currentScreen, _ := g.NavigationStack.Peek()
 
-	for _, layer := range g.Tilemap.Layers {
-		for index, id := range layer.Data {
+	if currentScreen == "game" {
+		// draw somethings
+	} else {
+		width, height := screen.Bounds().Dx(), screen.Bounds().Dy()
+		overlay := ebiten.NewImage(width, height)
+		overlay.Fill(color.RGBA{20, 20, 30, 255})
+		screen.DrawImage(overlay, &ebiten.DrawImageOptions{})
 
-			x := index % layer.Width
-			y := index / layer.Width
-
-			x *= g.Tilemap.TileWidth
-			y *= g.Tilemap.TileWidth
-
-			srcX := (id - 1) % constants.TILE_COUNT
-			srcY := (id - 1) / constants.TILE_COUNT
-
-			srcX *= g.Tilemap.TileWidth
-			srcY *= g.Tilemap.TileWidth
-			opts.GeoM.Translate(float64(x), float64(y))
-
-			screen.DrawImage(
-				g.Tileset.SubImage(image.Rect(srcX, srcY, srcX+g.Tilemap.TileWidth, srcY+g.Tilemap.TileWidth)).(*ebiten.Image),
-				&opts,
-			)
-
-			opts.GeoM.Reset()
+		if currentScreen == "Menu" {
+			for _, button := range g.MenuButtons {
+				button.Draw(screen)
+			}
+		} else if currentScreen == "Settings" {
+			// text.Draw(screen, "Settings", g.TitleFont, width/5, height/4, constants.Colors.Rust)
+			for _, button := range g.settingsButtons {
+				button.Draw(screen)
+			}
 		}
 	}
-	opts.GeoM.Translate(g.Player.X, g.Player.Y)
-	screen.DrawImage(g.Player.Img, &opts)
 }
